@@ -1,0 +1,69 @@
+#  A* 1D
+def astar(src, dst):
+    open_set = [src]  #green
+    closed_set = []   #red
+    g = {}            #cost
+    g[src] = 0
+    parent = {}       #A dictionary to store the parent node for each explored node
+    parent[src] = src
+
+    while len(open_set) > 0:
+        n = None         #stores current node
+        for v in open_set:
+            if n is None or g[v] + h[v] < g[n] + h[n]:     #select lowest f
+                n = v
+
+        if n is None:          #no node in open
+            print('Path does not exist!')
+            return None
+        if n == dst:
+            reconst_path = []
+            while parent[n] != n:
+                reconst_path.append(n)
+                n = parent[n]
+
+            reconst_path.append(src)
+            reconst_path.reverse()
+            print('Path found:', reconst_path)
+            return reconst_path
+
+        #If the selected node n is not the destination
+        # it's removed from the open_set and added to the closed_set, indicating that it has been explored.
+        open_set.remove(n)
+        closed_set.append(n)
+
+        for neighbor, cost in graph[n].items():
+            if neighbor in closed_set:
+                continue
+            tentative_g = g[n] + cost
+            if neighbor not in open_set or tentative_g < g[neighbor]:
+                parent[neighbor] = n
+                g[neighbor] = tentative_g
+                if neighbor not in open_set:
+                    open_set.append(neighbor)
+
+    print('Path not found!')
+    return None
+
+# Define the graph and heuristic values
+graph = {
+    'A': {'B': 2, 'C': 4},
+    'B': {'A': 2, 'C': 3, 'D': 8},
+    'C': {'A': 4, 'B': 3, 'E': 5, 'D': 2},
+    'D': {'B': 8, 'C': 2, 'E': 11, 'F': 22},
+    'E': {'C': 5, 'D': 11, 'F': 1},
+    'F': {'D': 22, 'E': 1}
+}
+
+h = {
+    'A': 2,
+    'B': 3,
+    'C': 3,
+    'D': 9,
+    'E': 7,
+    'F': 11
+}
+
+src = 'A'
+dst = 'F'
+astar(src, dst)
